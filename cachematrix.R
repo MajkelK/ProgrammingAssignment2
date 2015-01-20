@@ -1,15 +1,40 @@
-## Put comments here that give an overall description of what your
-## functions do
+## These two functions are intended to cache the computed
+## inverted matrix, which can be then retrieved without the need
+## to compute it again.
 
-## Write a short comment describing this function
+## The first function, makeCacheMatrix, creates a list of functions used to:
+## 1. set the value of matrix;
+## 2. get the value of matrix;
+## 3. set the value of inverted matrix;
+## 4. get the value of inverted matrix.
 
 makeCacheMatrix <- function(x = matrix()) {
-
+  m <- NULL
+  set <- function(y) {
+    x <<- y
+    m <<- NULL
+  }
+  get <- function() x
+  setSolve <- function(solve) m <<- solve
+  getSolve <- function() m
+  list(set = set, get = get,
+       setSolve = setSolve,
+       getSolve = getSolve)
 }
 
-
-## Write a short comment describing this function
+## cacheSolve function calculates inverted martix. It first checks 
+## if it has been calculated already - in which case it skips calculation
+## and returns inverted matrix from cache.
+## If inverted matrix was not calculated yet, it is stored in cache.
 
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+  m <- x$getSolve()
+  if(!is.null(m)) {
+    message("getting cached data")
+    return(m)
+  }
+  data <- x$get()
+  m <- solve(data, ...)
+  x$setSolve(m)
+  m
 }
